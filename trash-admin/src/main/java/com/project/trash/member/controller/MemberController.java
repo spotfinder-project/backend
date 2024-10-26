@@ -1,6 +1,7 @@
 package com.project.trash.member.controller;
 
 import com.project.trash.common.response.DataResponse;
+import com.project.trash.common.response.ListResponse;
 import com.project.trash.common.response.PageListResponse;
 import com.project.trash.common.response.SuccessResponse;
 import com.project.trash.facility.service.FacilityQueryService;
@@ -9,10 +10,12 @@ import com.project.trash.member.request.MemberFacilityListRequest;
 import com.project.trash.member.request.MemberListRequest;
 import com.project.trash.member.request.MemberReviewListRequest;
 import com.project.trash.member.request.MemberReviewModifyRequest;
+import com.project.trash.member.request.MemberSignupHistoryRequest;
 import com.project.trash.member.response.MemberDetailResponse;
 import com.project.trash.member.response.MemberFacilityListResponse;
 import com.project.trash.member.response.MemberListResponse;
 import com.project.trash.member.response.MemberReviewListResponse;
+import com.project.trash.member.response.MemberSignupHistoryResponse;
 import com.project.trash.member.service.MemberCommandService;
 import com.project.trash.member.service.MemberQueryService;
 import com.project.trash.review.service.ReviewCommandService;
@@ -129,5 +132,14 @@ public class MemberController {
 
     Pair<List<MemberReviewListResponse>, Long> pair = reviewQueryService.getList(param);
     return new PageListResponse<>(param, pair.getLeft(), pair.getRight());
+  }
+
+  @GetMapping("/signup/history")
+  @Operation(summary = "회원가입 이력 조회",
+      description = "회원가입 이력을 조회한다.")
+  public ListResponse<MemberSignupHistoryResponse> getSignupHistoryList(@ParameterObject MemberSignupHistoryRequest param) {
+    MemberValidator.validate(param);
+
+    return new ListResponse<>(memberQueryService.getList(param));
   }
 }

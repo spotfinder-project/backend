@@ -5,8 +5,10 @@ import com.project.trash.member.dao.MemberDao;
 import com.project.trash.member.domain.Member;
 import com.project.trash.member.repository.MemberRepository;
 import com.project.trash.member.request.MemberListRequest;
+import com.project.trash.member.request.MemberSignupHistoryRequest;
 import com.project.trash.member.response.MemberDetailResponse;
 import com.project.trash.member.response.MemberListResponse;
+import com.project.trash.member.response.MemberSignupHistoryResponse;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
@@ -33,6 +35,10 @@ public class MemberQueryService {
   @Transactional(readOnly = true)
   public Pair<List<MemberListResponse>, Long> getList(MemberListRequest param) {
     return Pair.of(memberDao.select(param), memberDao.count(param));
+  }
+
+  public List<MemberSignupHistoryResponse> getList(MemberSignupHistoryRequest param) {
+    return memberDao.select(param);
   }
 
   @Transactional(readOnly = true)

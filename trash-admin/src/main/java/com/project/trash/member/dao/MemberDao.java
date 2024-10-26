@@ -2,15 +2,21 @@ package com.project.trash.member.dao;
 
 import com.project.trash.common.utils.DateTimeUtils;
 import com.project.trash.member.request.MemberListRequest;
+import com.project.trash.member.request.MemberSignupHistoryRequest;
 import com.project.trash.member.response.MemberListResponse;
+import com.project.trash.member.response.MemberSignupHistoryResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
+import org.jooq.Field;
+import org.jooq.Row1;
+import org.jooq.Table;
 import org.jooq.impl.DSL;
 import org.jooq.types.ULong;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -18,6 +24,7 @@ import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 
+import static org.jooq.impl.DSL.row;
 import static trash.Tables.MEMBER;
 
 /**
@@ -85,5 +92,32 @@ public class MemberDao {
       conditions.add(DSL.condition(MEMBER.CRE_DTM.le(endDate)));
     }
     return conditions;
+  }
+
+  /**
+   * 회원가입 이력 조회
+   */
+  public List<MemberSignupHistoryResponse> select(MemberSignupHistoryRequest param) {
+    LocalDate startDate = DateTimeUtils.convertToDate(param.getStartDate());
+    LocalDate endDate = DateTimeUtils.convertToDate(param.getEndDate());
+
+    // 시작일과 종료일 사이의 날짜 리스트 생성
+    List<LocalDate> dateList = startDate.datesUntil(endDate.plusDays(1))
+                                        .toList();
+
+    Table<?> dateSeries = DSL.values(dateList.stream()
+                                             .map(date -> row(date))
+                                             .toArray(Row1[]::new)
+    ).as("date_series", "date");
+
+    Field<LocalDate> createdDate = MEMBER.CRE_DTM.cast(LocalDate.class);
+
+    return dsl.select(dateSeries.field("date"), DSL.count(MEMBER.MBR_ID))
+              .from(dateSeries)
+              .leftJoin(MEMBER)
+              .on(dateSeries.field("date").cast(LocalDate.class).eq(createdDate))
+              .groupBy(dateSeries.field("date"))
+              .orderBy(dateSeries.field("date").asc())
+              .fetchInto(MemberSignupHistoryResponse.class);
   }
 }
