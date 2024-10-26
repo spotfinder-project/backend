@@ -3,6 +3,7 @@ package com.project.trash.member.controller;
 import com.project.trash.common.response.DataResponse;
 import com.project.trash.common.response.ListResponse;
 import com.project.trash.common.response.SuccessResponse;
+import com.project.trash.common.utils.ValidatorUtils;
 import com.project.trash.facility.service.FacilityQueryService;
 import com.project.trash.facility.service.ReviewQueryService;
 import com.project.trash.member.controller.validation.MemberValidator;
@@ -18,10 +19,12 @@ import com.project.trash.member.service.MemberCommandService;
 import com.project.trash.member.service.MemberQueryService;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -55,6 +58,24 @@ public class MemberController {
       description = "회원이 등록한 시설물 목록을 조회한다.")
   public ListResponse<MyFacilityListResponse> getMyFacilities() {
     return new ListResponse<>(facilityQueryService.getList());
+  }
+
+  @GetMapping("/exist/{socialId}")
+  @Operation(summary = "회원가입여부 검증",
+      description = "socialId로 회원가입여부를 검증한다.")
+  public DataResponse<Boolean> verifySocialId(
+      @Parameter(description = "소셜 ID", example = "XGJbTOt3U-Ahqghp9x61PFduxX", required = true) @PathVariable String socialId) {
+    return new DataResponse<>(memberQueryService.isExistSocialId(socialId));
+  }
+
+  @GetMapping("/exist/nickname")
+  @Operation(summary = "닉네임 중복여부 검증",
+      description = "닉네임의 중복여부를 검증한다.")
+  public DataResponse<Boolean> isDuplicateNickname(
+      @Parameter(description = "닉네임", example = "테스트 닉네임", required = true) @RequestParam(required = false) String nickname) {
+    ValidatorUtils.validateEmpty(nickname);
+
+    return new DataResponse<>(memberQueryService.isExistNickname(nickname));
   }
 
   @GetMapping("/my")

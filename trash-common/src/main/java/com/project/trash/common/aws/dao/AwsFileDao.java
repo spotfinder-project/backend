@@ -4,6 +4,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.project.trash.common.exception.ValidationException;
+import com.project.trash.common.utils.LogUtils;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -16,11 +17,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import static com.project.trash.common.domain.resultcode.SystemResultCode.IMAGE_UPLOAD_FAIL;
 
-@Slf4j
 @RequiredArgsConstructor
 @Repository
 public class AwsFileDao {
@@ -47,7 +46,7 @@ public class AwsFileDao {
       // 결과 반환
       return filePath + "/" + fileName;
     } catch (Exception e) {
-      log.info("S3 파일 업로드 중 에러 발생 - " + e.getMessage(), e);
+      LogUtils.info("S3 파일 업로드 중 에러 발생 - " + e.getMessage());
       throw new ValidationException(IMAGE_UPLOAD_FAIL);
     }
   }

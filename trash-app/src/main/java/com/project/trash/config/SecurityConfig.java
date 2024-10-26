@@ -50,9 +50,10 @@ public class SecurityConfig {
         // 세션을 생성하지 않게 설정
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(
-            (authorize) -> authorize.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/doc", "/health", "/notices").permitAll()
+            (authorize) -> authorize.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/doc", "/health", "/notices"
+                                        , "/members/reissue", "/members/exist/**").permitAll()
                                     .requestMatchers(HttpMethod.GET, "/facilities/**").permitAll()
-                                    .requestMatchers("/auth/**", "/members/login", "/members/reissue").anonymous()
+                                    .requestMatchers("/auth/**", "/members/login").anonymous()
                                     .anyRequest().authenticated())
         .addFilterBefore(new JwtAuthenticationFilter(jwtService, memberQueryService),
             UsernamePasswordAuthenticationFilter.class)

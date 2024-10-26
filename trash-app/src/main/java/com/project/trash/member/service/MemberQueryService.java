@@ -40,4 +40,14 @@ public class MemberQueryService {
   public Optional<Token> getToken(String socialId) {
     return tokenRepository.findByMemberId(socialId);
   }
+
+  @Transactional(readOnly = true)
+  public boolean isExistSocialId(String socialId) {
+    return memberRepository.existsBySocialIdAndValid(socialId, Boolean.TRUE);
+  }
+
+  @Transactional(readOnly = true)
+  public boolean isExistNickname(String nickname) {
+    return memberRepository.existsByNicknameAndValid(nickname, Boolean.TRUE);
+  }
 }
