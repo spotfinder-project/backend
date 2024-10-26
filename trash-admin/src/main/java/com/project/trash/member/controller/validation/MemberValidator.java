@@ -7,6 +7,7 @@ import com.project.trash.member.request.MemberFacilityListRequest;
 import com.project.trash.member.request.MemberListRequest;
 import com.project.trash.member.request.MemberReviewListRequest;
 import com.project.trash.member.request.MemberReviewModifyRequest;
+import com.project.trash.member.request.MemberSignupHistoryRequest;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -42,5 +43,19 @@ public class MemberValidator {
 
   public void validate(MemberReviewListRequest param) {
     ValidatorUtils.validateNull(param.getMemberId());
+  }
+
+  public void validate(MemberSignupHistoryRequest param) {
+    String startDate = param.getStartDate();
+    if (StringUtils.isBlank(startDate) || !DateTimeUtils.validFormat(startDate)) {
+      throw new ValidationException(PARAM_INVALID);
+    }
+    String endDate = param.getEndDate();
+    if (StringUtils.isBlank(endDate) || !DateTimeUtils.validFormat(endDate)) {
+      throw new ValidationException(PARAM_INVALID);
+    }
+    if (!DateTimeUtils.isBeforeDate(startDate, endDate)) {
+      throw new ValidationException(PARAM_INVALID);
+    }
   }
 }
