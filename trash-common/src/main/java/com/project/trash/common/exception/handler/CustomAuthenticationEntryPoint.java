@@ -3,6 +3,7 @@ package com.project.trash.common.exception.handler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.trash.common.domain.resultcode.RequestResultCode;
 import com.project.trash.common.response.ErrorResponse;
+import com.project.trash.common.utils.LogUtils;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
@@ -11,12 +12,10 @@ import org.springframework.stereotype.Component;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * 인증 예외 핸들러
  */
-@Slf4j
 @Component
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
@@ -30,7 +29,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     try {
       response.getWriter().print(new ObjectMapper().writeValueAsString(errorResponse));
     } catch (Exception e) {
-      log.error(e.getMessage());
+      LogUtils.error(e.getMessage());
     }
   }
 }
