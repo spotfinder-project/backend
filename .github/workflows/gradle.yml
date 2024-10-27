@@ -77,11 +77,10 @@ jobs:
             --parameters commands='[
               "aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY_URI }}",
               "cd /root",
-              "docker stop $(docker ps -a -q)",
-              "docker rm $(docker ps -aq)",
-              "docker rmi $(docker images -a -q)",
+              "[ $(docker ps -q | wc -l) -gt 0 ] && docker stop $(docker ps -q)",
+              "[ $(docker images -q | wc -l) -gt 0 ] && docker rmi $(docker images -q)",
               "docker pull ${{ secrets.ECR_REGISTRY_URI }}:admin",
-              "docker run -d -p 8080:8080 --name spotfinder-admin ${{ secrets.ECR_REGISTRY_URI }}:admin"
+              "docker run -d --rm -p 8080:8080 --name spotfinder-admin -v /spotfinder/logs:/spotfinder/logs ${{ secrets.ECR_REGISTRY_URI }}:admin"
             ]' \
             --comment "Deploying Docker container"
       
@@ -140,10 +139,9 @@ jobs:
             --parameters commands='[
               "aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY_URI }}",
               "cd /root",
-              "docker stop $(docker ps -a -q)",
-              "docker rm $(docker ps -aq)",
-              "docker rmi $(docker images -a -q)",
+              "[ $(docker ps -q | wc -l) -gt 0 ] && docker stop $(docker ps -q)",
+              "[ $(docker images -q | wc -l) -gt 0 ] && docker rmi $(docker images -q)",
               "docker pull ${{ secrets.ECR_REGISTRY_URI }}:app",
-              "docker run -d -p 8080:8080 --name spotfinder-app ${{ secrets.ECR_REGISTRY_URI }}:app"
+              "docker run -d --rm -p 8080:8080 --name spotfinder-app -v /spotfinder/logs:/spotfinder/logs ${{ secrets.ECR_REGISTRY_URI }}:app"
             ]' \
             --comment "Deploying Docker container"

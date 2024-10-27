@@ -18,7 +18,7 @@ public class RestApiExceptionHandler extends ResponseEntityExceptionHandler {
 
   @ExceptionHandler(ValidationException.class)
   public ErrorResponse handleValidationException(ValidationException e, WebRequest request) {
-    LogUtils.info("Exception: " + e.getClass().getSimpleName() + "(" + e.getLocalizedMessage() + ")");
+    LogUtils.error("Exception: " + e.getClass().getSimpleName() + "(" + e.getLocalizedMessage() + ")");
     return new ErrorResponse(e.getResultCode());
   }
 }
