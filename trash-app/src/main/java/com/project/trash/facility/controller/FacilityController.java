@@ -123,11 +123,10 @@ public class FacilityController {
   @PostMapping
   @Operation(summary = "시설물 등록",
       description = "시설물을 등록한다.")
-  public SuccessResponse post(@RequestBody FacilityEntryRequest param) {
+  public DataResponse<Long> post(@RequestBody FacilityEntryRequest param) {
     FacilityValidator.validate(param);
 
-    facilityCommandService.entry(param);
-    return new SuccessResponse();
+    return new DataResponse<>(facilityCommandService.entry(param));
   }
 
   @PostMapping(value = "/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -169,11 +168,10 @@ public class FacilityController {
       description = "시설물을 수정한다."
           + "\n[에러 코드]"
           + "\n- FAC000 : 시설물 정보가 존재하지 않습니다.")
-  public SuccessResponse put(@RequestBody FacilityModifyRequest param) {
+  public DataResponse<Long> put(@RequestBody FacilityModifyRequest param) {
     FacilityValidator.validate(param);
 
-    facilityCommandService.modify(param);
-    return new SuccessResponse();
+    return new DataResponse<>(facilityCommandService.modify(param));
   }
 
   @PutMapping("/reviews")

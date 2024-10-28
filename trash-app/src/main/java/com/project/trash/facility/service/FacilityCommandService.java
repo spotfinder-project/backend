@@ -43,7 +43,7 @@ public class FacilityCommandService {
   }
 
   @Transactional
-  public void entry(FacilityEntryRequest param) {
+  public Long entry(FacilityEntryRequest param) {
     Facility facility = facilityRepository.save(new Facility(FacilityType.fromCode(param.getType()), param.getName(), param.getLocation(),
         param.getDetailLocation(), param.getLatitude(), param.getLongitude(),
         param.getInformation(), String.valueOf(MemberUtils.getMemberId())));
@@ -58,6 +58,8 @@ public class FacilityCommandService {
         image.setFacility(facility);
       }
     }
+
+    return facility.getFacilityId();
   }
 
   @Transactional
@@ -75,7 +77,7 @@ public class FacilityCommandService {
   }
 
   @Transactional
-  public void modify(FacilityModifyRequest param) {
+  public Long modify(FacilityModifyRequest param) {
     Facility facility = facilityQueryService.getOne(param.getFacilityId(), MemberUtils.getMemberId());
 
     facility.update(FacilityType.fromCode(param.getType()), param.getName(), param.getLocation(),
@@ -83,6 +85,8 @@ public class FacilityCommandService {
         param.getInformation());
 
     modifyImages(facility, param.getImageIds());
+
+    return facility.getFacilityId();
   }
 
   private void modifyImages(Facility facility, Set<Long> addImageIds) {
