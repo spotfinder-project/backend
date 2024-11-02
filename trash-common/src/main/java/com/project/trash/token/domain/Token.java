@@ -31,7 +31,8 @@ public class Token extends BaseTimeEntity {
     this.refreshToken = refreshToken;
   }
 
-  public void updateAccessToken(String accessToken) {
+  public void updateToken(String accessToken, String refreshToken) {
     this.accessToken = accessToken;
+    this.refreshToken = refreshToken;
   }
 }

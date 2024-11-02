@@ -3,11 +3,12 @@ package com.project.trash.admin.controller;
 import com.project.trash.admin.request.AdminModifyRequest;
 import com.project.trash.admin.request.LoginRequest;
 import com.project.trash.admin.request.ReissueRequest;
-import com.project.trash.admin.response.AccessTokenInfoResponse;
+import com.project.trash.admin.response.ReissueTokenResponse;
 import com.project.trash.admin.response.LoginResponse;
 import com.project.trash.admin.service.AdminCommandService;
 import com.project.trash.common.response.DataResponse;
 import com.project.trash.common.response.SuccessResponse;
+import com.project.trash.common.utils.CookieUtils;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -52,16 +53,19 @@ public class AdminController {
   }
 
   @PostMapping("/reissue")
-  @Operation(summary = "엑세스 토큰 재발급",
-      description = "엑세스 토큰을 재발급한다."
+  @Operation(summary = "토큰 재발급",
+      description = "토큰을 재발급한다."
           + "\n[에러 코드]"
           + "\n- ADM000 : 관리자 정보가 존재하지 않습니다."
           + "\n- AUTH000 : 토큰 정보가 존재하지 않습니다."
           + "\n- AUTH001 : 토큰 정보가 유효하지 않습니다.")
-  public DataResponse<AccessTokenInfoResponse> postReissue(@RequestBody ReissueRequest param, HttpServletRequest request) {
+  public DataResponse<ReissueTokenResponse> postReissue(@RequestBody ReissueRequest param, HttpServletRequest request, HttpServletResponse response) {
     AdminValidator.validate(param);
 
-    return new DataResponse<>(adminCommandService.reissue(param, request));
+    ReissueTokenResponse res = adminCommandService.reissue(param, request);
+    CookieUtils.setCookie("accessToken", res.getAccessToken(), res.getAccessExpiration(), response);
+    CookieUtils.setCookie("refreshToken", res.getRefreshToken(), res.getRefreshExpiration(), response);
+    return new DataResponse<>(res);
   }
 
   @PutMapping

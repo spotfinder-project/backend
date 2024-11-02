@@ -11,7 +11,7 @@ import com.project.trash.member.repository.MemberRepository;
 import com.project.trash.member.request.LoginRequest;
 import com.project.trash.member.request.MemberDeleteRequest;
 import com.project.trash.member.request.ReissueRequest;
-import com.project.trash.member.response.AccessTokenInfoResponse;
+import com.project.trash.member.response.ReissueTokenResponse;
 import com.project.trash.member.response.LoginResponse;
 import com.project.trash.token.domain.Token;
 import com.project.trash.token.repository.TokenRepository;
@@ -80,7 +80,7 @@ public class MemberCommandService {
   }
 
   @Transactional
-  public AccessTokenInfoResponse reissue(ReissueRequest param) {
+  public ReissueTokenResponse reissue(ReissueRequest param) {
     Member member = memberQueryService.getOne(param.getSocialId());
 
     Token token = getToken(member.getSocialId());
@@ -91,10 +91,16 @@ public class MemberCommandService {
     }
 
     Pair<String, Long> accessToken = jwtService.createAccessToken(member.getSocialId());
+    Pair<String, Long> refreshToken = jwtService.createRefreshToken(member.getSocialId());
 
-    token.updateAccessToken(accessToken.getLeft());
+    token.updateToken(accessToken.getLeft(), refreshToken.getLeft());
 
-    return new AccessTokenInfoResponse(accessToken.getLeft(), accessToken.getRight());
+    return ReissueTokenResponse.builder()
+        .accessToken(accessToken.getLeft())
+        .accessExpiration(accessToken.getRight())
+        .refreshToken(refreshToken.getLeft())
+        .refreshExpiration(refreshToken.getRight())
+        .build();
   }
 
   @Transactional

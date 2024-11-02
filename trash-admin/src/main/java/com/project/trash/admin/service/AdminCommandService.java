@@ -4,7 +4,7 @@ import com.project.trash.admin.domain.Admin;
 import com.project.trash.admin.request.AdminModifyRequest;
 import com.project.trash.admin.request.LoginRequest;
 import com.project.trash.admin.request.ReissueRequest;
-import com.project.trash.admin.response.AccessTokenInfoResponse;
+import com.project.trash.admin.response.ReissueTokenResponse;
 import com.project.trash.admin.response.LoginResponse;
 import com.project.trash.auth.service.JwtService;
 import com.project.trash.common.exception.ValidationException;
@@ -74,11 +74,10 @@ public class AdminCommandService {
   }
 
   @Transactional
-  public AccessTokenInfoResponse reissue(ReissueRequest param, HttpServletRequest request) {
+  public ReissueTokenResponse reissue(ReissueRequest param, HttpServletRequest request) {
     Admin admin = adminQueryService.getOne(param.getId());
 
-    Token token =
-        tokenRepository.findByMemberId(admin.getId()).orElseThrow(() -> new ValidationException(AUTH_TOKEN_NOT_FOUND));
+    Token token = tokenRepository.findByMemberId(admin.getId()).orElseThrow(() -> new ValidationException(AUTH_TOKEN_NOT_FOUND));
 
     String refreshToken = CookieUtils.getCookie(request, "refreshToken");
 
@@ -87,11 +86,17 @@ public class AdminCommandService {
       throw new ValidationException(AUTH_TOKEN_INVALID);
     }
 
-    Pair<String, Long> accessToken = jwtService.createAccessToken(admin.getId());
+    Pair<String, Long> accessTokenInfo = jwtService.createAccessToken(admin.getId());
+    Pair<String, Long> refreshTokenInfo = jwtService.createRefreshToken(admin.getId());
 
-    token.updateAccessToken(accessToken.getLeft());
+    token.updateToken(accessTokenInfo.getLeft(), refreshTokenInfo.getLeft());
 
-    return new AccessTokenInfoResponse(accessToken.getLeft(), accessToken.getRight());
+    return ReissueTokenResponse.builder()
+         .accessToken(accessTokenInfo.getLeft())
+         .accessExpiration(accessTokenInfo.getRight())
+         .refreshToken(refreshTokenInfo.getLeft())
+         .refreshExpiration(refreshTokenInfo.getRight())
+         .build();
   }
 
   private Token getToken(String id) {

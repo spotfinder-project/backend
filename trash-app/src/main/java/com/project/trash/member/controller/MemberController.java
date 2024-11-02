@@ -10,7 +10,7 @@ import com.project.trash.member.controller.validation.MemberValidator;
 import com.project.trash.member.request.LoginRequest;
 import com.project.trash.member.request.MemberDeleteRequest;
 import com.project.trash.member.request.ReissueRequest;
-import com.project.trash.member.response.AccessTokenInfoResponse;
+import com.project.trash.member.response.ReissueTokenResponse;
 import com.project.trash.member.response.MemberDetailResponse;
 import com.project.trash.member.response.MyFacilityListResponse;
 import com.project.trash.member.response.MyReviewListResponse;
@@ -124,13 +124,13 @@ public class MemberController {
   }
 
   @PostMapping("/reissue")
-  @Operation(summary = "엑세스 토큰 재발급",
-      description = "엑세스 토큰을 재발급한다."
+  @Operation(summary = "토큰 재발급",
+      description = "토큰을 재발급한다."
           + "\n[에러 코드]"
           + "\n- MBR000 : 회원 정보가 존재하지 않습니다."
           + "\n- AUTH000 : 토큰 정보가 존재하지 않습니다."
           + "\n- AUTH001 : 토큰 정보가 유효하지 않습니다.")
-  public DataResponse<AccessTokenInfoResponse> postReissue(@RequestBody ReissueRequest param) {
+  public DataResponse<ReissueTokenResponse> postReissue(@RequestBody ReissueRequest param) {
     MemberValidator.validate(param);
 
     return new DataResponse<>(memberCommandService.reissue(param));
