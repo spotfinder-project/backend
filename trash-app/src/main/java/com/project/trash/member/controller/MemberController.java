@@ -9,6 +9,7 @@ import com.project.trash.facility.service.ReviewQueryService;
 import com.project.trash.member.controller.validation.MemberValidator;
 import com.project.trash.member.request.LoginRequest;
 import com.project.trash.member.request.MemberDeleteRequest;
+import com.project.trash.member.request.MemberNicknameModifyRequest;
 import com.project.trash.member.request.ReissueRequest;
 import com.project.trash.member.response.ReissueTokenResponse;
 import com.project.trash.member.response.MemberDetailResponse;
@@ -97,7 +98,10 @@ public class MemberController {
       description = "로그인 회원의 닉네임을 수정한다.")
   public SuccessResponse putMyNickname(
       @Parameter(description = "수정할 닉네임", required = true)
-      @RequestBody String nickname) {
+      @RequestBody MemberNicknameModifyRequest param) {
+    ValidatorUtils.validateEmpty(param.getNickname());
+    memberCommandService.modify(param);
+
     return new SuccessResponse();
   }
 

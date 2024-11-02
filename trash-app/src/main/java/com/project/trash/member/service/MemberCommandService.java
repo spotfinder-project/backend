@@ -10,6 +10,7 @@ import com.project.trash.member.domain.enums.SocialType;
 import com.project.trash.member.repository.MemberRepository;
 import com.project.trash.member.request.LoginRequest;
 import com.project.trash.member.request.MemberDeleteRequest;
+import com.project.trash.member.request.MemberNicknameModifyRequest;
 import com.project.trash.member.request.ReissueRequest;
 import com.project.trash.member.response.ReissueTokenResponse;
 import com.project.trash.member.response.LoginResponse;
@@ -77,6 +78,12 @@ public class MemberCommandService {
   @Transactional
   public void logout() {
     tokenRepository.delete(getToken(MemberUtils.getMember().getSocialId()));
+  }
+
+  @Transactional
+  public void modify(MemberNicknameModifyRequest param) {
+    Member member = memberQueryService.getOne(MemberUtils.getMember().getSocialId());
+    member.update(param.getNickname());
   }
 
   @Transactional
