@@ -9,7 +9,6 @@ import com.project.trash.utils.MemberUtils;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
-import org.jooq.types.ULong;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -66,6 +65,7 @@ public class FacilityDao {
         FACILITY.FCLTY_DTL_LCTN, FACILITY.FCLTY_INFO)
         .from(FACILITY)
         .where(FACILITY.MBR_ID.eq(String.valueOf(MemberUtils.getMemberId())))
+        .and(FACILITY.FCLTY_APRV_STA.eq(FacilityApprovalStatus.APPROVE.getCode()))
         .orderBy(FACILITY.CRE_DTM.desc())
         .fetchInto(MyFacilityListResponse.class);
   }
