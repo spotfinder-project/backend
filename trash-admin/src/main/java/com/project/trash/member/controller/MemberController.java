@@ -119,7 +119,6 @@ public class MemberController {
       description = "회원 목록을 조회한다.")
   public PageListResponse<MemberListResponse> getList(@ParameterObject MemberListRequest param) {
     MemberValidator.validate(param);
-
     Pair<List<MemberListResponse>, Long> pair = memberQueryService.getList(param);
     return new PageListResponse<>(param, pair.getLeft(), pair.getRight());
   }

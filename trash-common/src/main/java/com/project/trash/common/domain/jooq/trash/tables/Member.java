@@ -65,7 +65,7 @@ public class Member extends TableImpl<MemberRecord> {
     /**
      * The column <code>spotfinder.MEMBER.MBR_GNDR</code>. 성별
      */
-    public final TableField<MemberRecord, String> MBR_GNDR = createField(DSL.name("MBR_GNDR"), SQLDataType.CHAR(1).nullable(false), this, "성별");
+    public final TableField<MemberRecord, String> MBR_GNDR = createField(DSL.name("MBR_GNDR"), SQLDataType.CHAR(1), this, "성별");
 
     /**
      * The column <code>spotfinder.MEMBER.MBR_SCL_ID</code>. 소셜 ID

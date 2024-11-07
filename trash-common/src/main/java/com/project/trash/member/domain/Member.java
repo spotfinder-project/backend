@@ -35,7 +35,7 @@ public class Member extends BaseTimeEntity {
   private String nickname = "";
 
   @Convert(converter = GenderType.TypeCodeConverter.class)
-  @Column(name = "MBR_GNDR", nullable = false)
+  @Column(name = "MBR_GNDR")
   private GenderType gender;
 
   @Column(name = "MBR_SCL_ID", nullable = false)
@@ -64,6 +64,8 @@ public class Member extends BaseTimeEntity {
 
   public void delete() {
     this.valid = Boolean.FALSE;
+    this.email = "null";
+    this.socialId = "null";
     this.nickname = "알 수 없음";
   }
 }

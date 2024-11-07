@@ -55,7 +55,7 @@ public class SecurityConfig {
                                     .requestMatchers(HttpMethod.GET, "/facilities/**").permitAll()
                                     .requestMatchers("/auth/**", "/members/login").anonymous()
                                     .anyRequest().authenticated())
-        .addFilterBefore(new JwtAuthenticationFilter(jwtService, memberQueryService),
+        .addFilterBefore(new JwtAuthenticationFilter(jwtService, memberQueryService, customAuthenticationEntryPoint),
             UsernamePasswordAuthenticationFilter.class)
         .exceptionHandling(it -> {
           it.authenticationEntryPoint(customAuthenticationEntryPoint);

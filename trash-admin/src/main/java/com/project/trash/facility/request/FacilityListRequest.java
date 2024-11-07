@@ -16,6 +16,9 @@ public class FacilityListRequest extends PageRequest {
   @Parameter(description = "시설물 종류 (R - 화장실, S - 흡연구역, T - 쓰레기통)", example = "R")
   private String type;
 
+  @Parameter(description = "시설물명", example = "쌍문역 내 화장실")
+  private String name;
+
   @Parameter(description = "위치", example = "쌍문역")
   private String location;
 

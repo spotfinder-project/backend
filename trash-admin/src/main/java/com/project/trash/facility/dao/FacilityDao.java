@@ -6,15 +6,12 @@ import com.project.trash.facility.request.FacilityListRequest;
 import com.project.trash.facility.response.FacilityListResponse;
 import com.project.trash.member.request.MemberFacilityListRequest;
 import com.project.trash.member.response.MemberFacilityListResponse;
-import com.project.trash.member.response.MemberListResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Record1;
-import org.jooq.SelectConditionStep;
 import org.jooq.SelectLimitPercentStep;
-import org.jooq.SelectLimitStep;
 import org.jooq.impl.DSL;
 import org.jooq.types.ULong;
 import org.springframework.stereotype.Repository;
@@ -29,7 +26,6 @@ import trash.tables.FacilityApprovalHistory;
 
 import static org.jooq.impl.DSL.when;
 import static trash.Tables.FACILITY_APPROVAL_HISTORY;
-import static trash.Tables.MEMBER;
 import static trash.tables.Facility.FACILITY;
 
 /**
@@ -115,6 +111,10 @@ public class FacilityDao {
     // 시설물 종류
     if (StringUtils.isNotBlank(param.getType())) {
       conditions.add(DSL.condition(FACILITY.FCLTY_TYP.eq(param.getType())));
+    }
+    // 시설물명
+    if (StringUtils.isNotBlank(param.getName())) {
+      conditions.add(DSL.condition(FACILITY.FCLTY_NM.like("%" + param.getName() + "%")));
     }
     // 위치
     if (StringUtils.isNotBlank(param.getLocation())) {

@@ -1,5 +1,6 @@
 package com.project.trash.member.dao;
 
+import com.project.trash.common.domain.enums.Valid;
 import com.project.trash.common.utils.DateTimeUtils;
 import com.project.trash.member.request.MemberListRequest;
 import com.project.trash.member.request.MemberSignupHistoryRequest;
@@ -91,6 +92,7 @@ public class MemberDao {
       LocalDateTime endDate = DateTimeUtils.convertToDate(param.getEndDate()).atTime(LocalTime.MAX);
       conditions.add(DSL.condition(MEMBER.CRE_DTM.le(endDate)));
     }
+    conditions.add(DSL.condition(MEMBER.MBR_VLD_YN.eq(Valid.TRUE.getCode())));
     return conditions;
   }
 

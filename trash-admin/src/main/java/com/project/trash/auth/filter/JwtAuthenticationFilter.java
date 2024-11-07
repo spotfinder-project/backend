@@ -4,12 +4,15 @@ import com.project.trash.admin.domain.AdminDetail;
 import com.project.trash.admin.service.AdminQueryService;
 import com.project.trash.auth.service.JwtService;
 import com.project.trash.common.constant.PathConstant;
+import com.project.trash.common.exception.ValidationException;
+import com.project.trash.common.exception.handler.CustomAuthenticationEntryPoint;
 import com.project.trash.common.utils.CookieUtils;
 import com.project.trash.token.domain.Token;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -31,6 +34,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   private final JwtService jwtService;
   private final AdminQueryService adminQueryService;
+  private final CustomAuthenticationEntryPoint authenticationEntryPoint;
 
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -47,24 +51,29 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       return;
     }
 
-    String adminId = jwtService.extractUsername(accessToken);
-    if (StringUtils.isNotBlank(adminId)) {
-      AdminDetail adminDetail = new AdminDetail(adminQueryService.getOne(adminId));
+    try {
+      String adminId = jwtService.extractUsername(accessToken);
+      if (StringUtils.isNotBlank(adminId)) {
+        AdminDetail adminDetail = new AdminDetail(adminQueryService.getOne(adminId));
 
-      Optional<Token> token = adminQueryService.getToken(adminId);
-      if (token.isEmpty() || !token.get().getAccessToken().equals(accessToken)) {
-        filterChain.doFilter(request, response);
-        return;
+        Optional<Token> token = adminQueryService.getToken(adminId);
+        if (token.isEmpty() || !token.get().getAccessToken().equals(accessToken)) {
+          filterChain.doFilter(request, response);
+          return;
+        }
+
+        // 유효성 체크
+        if (jwtService.isTokenValid(accessToken, adminDetail)) {
+          Authentication authentication =
+              new UsernamePasswordAuthenticationToken(adminDetail, accessToken, adminDetail.getAuthorities());
+          SecurityContextHolder.getContext().setAuthentication(authentication);
+        }
       }
 
-      // 유효성 체크
-      if (jwtService.isTokenValid(accessToken, adminDetail)) {
-        Authentication authentication =
-            new UsernamePasswordAuthenticationToken(adminDetail, accessToken, adminDetail.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-      }
+      filterChain.doFilter(request, response);
+    } catch (Exception e) {
+      String message = e instanceof ValidationException ? ((ValidationException) e).getResultCode().getMessage() : e.getMessage();
+      authenticationEntryPoint.commence(request, response, new AuthenticationException(message, e) {});
     }
-
-    filterChain.doFilter(request, response);
   }
 }

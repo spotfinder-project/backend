@@ -52,7 +52,7 @@ public class SecurityConfig {
             (authorize) -> authorize.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/doc", "/health",
                 "/admins/login", "/admins/reissue").permitAll()
                                     .anyRequest().authenticated())
-        .addFilterBefore(new JwtAuthenticationFilter(jwtService, adminQueryService),
+        .addFilterBefore(new JwtAuthenticationFilter(jwtService, adminQueryService, customAuthenticationEntryPoint),
             UsernamePasswordAuthenticationFilter.class)
         .exceptionHandling(it -> {
           it.authenticationEntryPoint(customAuthenticationEntryPoint);
