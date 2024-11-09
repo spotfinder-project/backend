@@ -48,7 +48,7 @@ public class MemberQueryService {
 
   @Transactional(readOnly = true)
   public void verifyExist(Long id) {
-    if (!memberRepository.existsById(id)) {
+    if (!memberRepository.existsByMemberIdAndValid(id, Boolean.TRUE)) {
       throw new ValidationException(MEMBER_NOT_FOUND);
     }
   }

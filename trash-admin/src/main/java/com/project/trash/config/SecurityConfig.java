@@ -50,7 +50,7 @@ public class SecurityConfig {
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(
             (authorize) -> authorize.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/doc", "/health",
-                "/admins/login", "/admins/reissue").permitAll()
+                                        "/admins/login", "/admins/reissue").permitAll()
                                     .anyRequest().authenticated())
         .addFilterBefore(new JwtAuthenticationFilter(jwtService, adminQueryService, customAuthenticationEntryPoint),
             UsernamePasswordAuthenticationFilter.class)
