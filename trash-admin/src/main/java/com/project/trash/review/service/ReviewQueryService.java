@@ -1,9 +1,7 @@
 package com.project.trash.review.service;
 
 import com.project.trash.common.exception.ValidationException;
-import com.project.trash.facility.domain.Facility;
 import com.project.trash.facility.domain.Review;
-import com.project.trash.facility.repository.FacilityRepository;
 import com.project.trash.facility.repository.ReviewRepository;
 import com.project.trash.facility.request.FacilityReviewListRequest;
 import com.project.trash.facility.response.FacilityReviewListResponse;
@@ -16,11 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
-import trash.tables.records.ReviewRecord;
 
 import static com.project.trash.common.domain.resultcode.ReviewResultCode.REVIEW_NOT_FOUND;
 

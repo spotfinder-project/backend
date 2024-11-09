@@ -118,7 +118,7 @@ public class FacilityDao {
     }
     // 위치
     if (StringUtils.isNotBlank(param.getLocation())) {
-      conditions.add(DSL.condition(FACILITY.FCLTY_DTL_LCTN.like("%" + param.getLocation() + "%")));
+      conditions.add(DSL.condition(FACILITY.FCLTY_LCTN.like("%" + param.getLocation() + "%")));
     }
     // 승인 상태
     if (StringUtils.isNotBlank(param.getApprovalStatus())) {

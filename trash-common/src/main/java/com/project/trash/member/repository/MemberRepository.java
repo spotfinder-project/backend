@@ -8,6 +8,8 @@ import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
+  boolean existsByMemberIdAndValid(Long id, Boolean valid);
+
   boolean existsBySocialIdAndValid(String socialId, Boolean valid);
 
   boolean existsByNicknameAndValid(String nickname, Boolean valid);
