@@ -109,7 +109,7 @@ public class MemberController {
   @Operation(summary = "로그인",
       description = "로그인한다."
           + "\n[에러 코드]"
-          + "\n- AUTH002 : OAuth 엑세스 토큰 정보가 유효하지 않습니다."
+          + "\n- AUTH002 : 소셜 ID가 유효하지 않습니다."
           + "\n- AUTH004 : 소셜 서비스의 회원 정보 조회를 실패했습니다.")
   public DataResponse<LoginResponse> postLogin(@RequestBody LoginRequest param) {
     MemberValidator.validate(param);

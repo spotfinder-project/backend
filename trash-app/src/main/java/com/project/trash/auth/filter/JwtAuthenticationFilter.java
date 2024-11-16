@@ -4,6 +4,7 @@ import com.project.trash.auth.service.JwtService;
 import com.project.trash.common.constant.PathConstant;
 import com.project.trash.common.exception.ValidationException;
 import com.project.trash.common.exception.handler.CustomAuthenticationEntryPoint;
+import com.project.trash.common.utils.LogUtils;
 import com.project.trash.member.domain.MemberDetail;
 import com.project.trash.member.service.MemberQueryService;
 import com.project.trash.token.domain.Token;
@@ -46,6 +47,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     try {
+      LogUtils.info("path: " + path);
       String accessToken = jwtService.extractToken(request);
       if (StringUtils.isBlank(accessToken)) {
         filterChain.doFilter(request, response);

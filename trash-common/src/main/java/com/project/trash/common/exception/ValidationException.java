@@ -16,4 +16,9 @@ public class ValidationException extends RuntimeException {
     super(resultCode.getMessage());
     this.resultCode = resultCode;
   }
+
+  public ValidationException(ResultCode resultCode, Exception e) {
+    super(e.getMessage());
+    this.resultCode = resultCode;
+  }
 }

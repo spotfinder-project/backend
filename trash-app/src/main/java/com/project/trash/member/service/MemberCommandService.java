@@ -1,5 +1,6 @@
 package com.project.trash.member.service;
 
+import com.project.trash.auth.apple.AppleService;
 import com.project.trash.auth.client.SocialApiClientComposite;
 import com.project.trash.auth.domain.OAuthMember;
 import com.project.trash.auth.service.JwtService;
@@ -12,8 +13,8 @@ import com.project.trash.member.request.LoginRequest;
 import com.project.trash.member.request.MemberDeleteRequest;
 import com.project.trash.member.request.MemberNicknameModifyRequest;
 import com.project.trash.member.request.ReissueRequest;
-import com.project.trash.member.response.ReissueTokenResponse;
 import com.project.trash.member.response.LoginResponse;
+import com.project.trash.member.response.ReissueTokenResponse;
 import com.project.trash.token.domain.Token;
 import com.project.trash.token.repository.TokenRepository;
 import com.project.trash.utils.MemberUtils;
@@ -24,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
-import static com.project.trash.common.domain.resultcode.AuthResultCode.AUTH_OAUTH_ACCESS_TOKEN_INVALID;
+import static com.project.trash.common.domain.resultcode.AuthResultCode.AUTH_SOCIAL_ID_INVALID;
 import static com.project.trash.common.domain.resultcode.AuthResultCode.AUTH_TOKEN_INVALID;
 import static com.project.trash.common.domain.resultcode.AuthResultCode.AUTH_TOKEN_NOT_FOUND;
 
@@ -34,6 +35,7 @@ public class MemberCommandService {
 
   private final JwtService jwtService;
   private final SocialApiClientComposite socialApiClient;
+  private final AppleService appleService;
 
   private final MemberQueryService memberQueryService;
   private final MemberRepository memberRepository;
@@ -43,24 +45,25 @@ public class MemberCommandService {
   public LoginResponse login(LoginRequest param) {
     String socialId = param.getSocialId();
     SocialType socialType = SocialType.fromCode(param.getSocialType());
+
     Member member;
-    if (!memberRepository.existsBySocialIdAndValid(socialId, Boolean.TRUE)) {
-      OAuthMember memberInfo = socialApiClient.getMemberInfo(socialType, param.getAccessToken());
-
-      // 소셜 ID 일치여부 검증
-      if (!socialId.equals(memberInfo.socialId())) {
-        throw new ValidationException(AUTH_OAUTH_ACCESS_TOKEN_INVALID);
-      }
-
-      member = memberRepository.save(
-          new Member(memberInfo.email(), memberInfo.gender(), memberInfo.socialId(), memberInfo.socialType()));
+    OAuthMember oauthMember;
+    if (socialType == SocialType.APPLE) {
+      oauthMember = appleService.getMemberInfo(param.getAccessToken());
     } else {
-      // 엑세스 토큰 유효성 검증
-      if (!socialId.equals(socialApiClient.getSocialId(socialType, param.getAccessToken()))) {
-        throw new ValidationException(AUTH_OAUTH_ACCESS_TOKEN_INVALID);
-      }
+      oauthMember = socialApiClient.getMemberInfo(socialType, param.getAccessToken());
+    }
 
-      member = memberQueryService.getOne(socialId);
+    // 소셜 ID 일치여부 검증
+    if (!socialId.equals(oauthMember.socialId())) {
+      throw new ValidationException(AUTH_SOCIAL_ID_INVALID);
+    }
+
+    if (!memberRepository.existsBySocialIdAndValid(oauthMember.socialId(), Boolean.TRUE)) {
+      member = memberRepository.save(
+          new Member(oauthMember.email(), oauthMember.gender(), oauthMember.socialId(), oauthMember.socialType()));
+    } else {
+      member = memberQueryService.getOne(oauthMember.socialId());
     }
 
     Pair<String, Long> accessToken = jwtService.createAccessToken(socialId);

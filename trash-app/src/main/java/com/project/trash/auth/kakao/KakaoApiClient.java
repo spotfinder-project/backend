@@ -25,15 +25,15 @@ import static com.project.trash.common.domain.resultcode.AuthResultCode.AUTH_OAU
 @Component
 public class KakaoApiClient implements SocialApiClient {
 
-  private final KakaoOAuthConfig kakaoOAuthConfig;
+  private final KakaoProperties kakaoProperties;
 
   @Override
   public OAuthMember getMemberInfo(String accessToken) {
-    String resultText = WebClient.create(kakaoOAuthConfig.userInfoUri())
+    String resultText = WebClient.create(kakaoProperties.userInfoUri())
                                  .get()
                                  .header("Content-type", "application/x-www-form-urlencoded;charset=utf-8")
                                  .header(HttpHeaders.AUTHORIZATION,
-                                     kakaoOAuthConfig.authorizationPrefix() + accessToken)
+                                     kakaoProperties.authorizationPrefix() + accessToken)
                                  .exchangeToMono(res -> res.bodyToMono(String.class))
                                  .block();
 
@@ -44,12 +44,12 @@ public class KakaoApiClient implements SocialApiClient {
   public String getAccessToken(String authCode) {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("grant_type", "authorization_code");
-    params.add("client_id", kakaoOAuthConfig.clientId());
-    params.add("redirect_uri", kakaoOAuthConfig.redirectUri());
+    params.add("client_id", kakaoProperties.clientId());
+    params.add("redirect_uri", kakaoProperties.redirectUri());
     params.add("code", authCode);
-    params.add("client_secret", kakaoOAuthConfig.clientSecret());
+    params.add("client_secret", kakaoProperties.clientSecret());
 
-    String resultText = WebClient.create(kakaoOAuthConfig.tokenUri())
+    String resultText = WebClient.create(kakaoProperties.tokenUri())
                                  .post()
                                  .bodyValue(params)
                                  .header("Content-type", "application/x-www-form-urlencoded;charset=utf-8")
@@ -61,11 +61,11 @@ public class KakaoApiClient implements SocialApiClient {
 
   @Override
   public String getSocialId(String accessToken) {
-    String resultText = WebClient.create(kakaoOAuthConfig.tokenInfoUri())
+    String resultText = WebClient.create(kakaoProperties.tokenInfoUri())
                                  .get()
                                  .header("Content-type", "application/x-www-form-urlencoded;charset=utf-8")
                                  .header(HttpHeaders.AUTHORIZATION,
-                                     kakaoOAuthConfig.authorizationPrefix() + accessToken)
+                                     kakaoProperties.authorizationPrefix() + accessToken)
                                  .exchangeToMono(res -> res.bodyToMono(String.class))
                                  .block();
 
@@ -79,10 +79,10 @@ public class KakaoApiClient implements SocialApiClient {
 
   @Override
   public void unlink(String accessToken) {
-    WebClient.create(kakaoOAuthConfig.unlinkUri())
+    WebClient.create(kakaoProperties.unlinkUri())
              .post()
              .header(HttpHeaders.AUTHORIZATION,
-                 kakaoOAuthConfig.authorizationPrefix() + accessToken)
+                 kakaoProperties.authorizationPrefix() + accessToken)
              .exchangeToMono(res -> res.bodyToMono(String.class))
              .block();
   }

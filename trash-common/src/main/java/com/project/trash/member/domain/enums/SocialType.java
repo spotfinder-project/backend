@@ -13,18 +13,10 @@ import lombok.Getter;
  */
 @Getter
 public enum SocialType implements Codable {
-  /**
-   * 카카오
-   */
+
   KAKAO("K"),
-  /**
-   * 네이버
-   */
   NAVER("N"),
-  /**
-   * 구글
-   */
-  GOOGLE("G");
+  APPLE("A");
 
   private final String code;
 

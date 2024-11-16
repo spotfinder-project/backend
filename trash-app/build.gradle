@@ -4,11 +4,17 @@ dependencies {
     implementation project(":trash-common")
     implementation 'org.springframework.boot:spring-boot-starter-webflux:3.2.4'
     implementation 'io.netty:netty-resolver-dns-native-macos:4.1.68.Final:osx-aarch_64'
+    implementation 'org.bouncycastle:bcprov-jdk18on:1.78.1'
+    implementation 'org.bouncycastle:bcpkix-jdk18on:1.76'
+    implementation 'com.nimbusds:nimbus-jose-jwt:9.42'
 }
 
 task copyConfig(type: Copy) {
     copy {
         from(fileTree(dir: '../backend-config/app', include: '*.yml'))
+        from(fileTree(dir: '../backend-config/key', include: '*.*')) {
+            into 'key'
+        }
         into 'src/main/resources'
     }
 }

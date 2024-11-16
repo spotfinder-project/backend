@@ -53,8 +53,8 @@ public class SecurityConfig {
             (authorize) -> authorize.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/doc", "/health", "/notices"
                                         , "/members/reissue", "/members/exist/**").permitAll()
                                     .requestMatchers(HttpMethod.GET, "/facilities/**").permitAll()
-                                    .requestMatchers("/auth/**", "/members/login").anonymous()
-                                    .anyRequest().authenticated())
+                                    .requestMatchers("/auth/**", "/members/login").permitAll()
+                                    .anyRequest().permitAll())
         .addFilterBefore(new JwtAuthenticationFilter(jwtService, memberQueryService, customAuthenticationEntryPoint),
             UsernamePasswordAuthenticationFilter.class)
         .exceptionHandling(it -> {
@@ -71,7 +71,8 @@ public class SecurityConfig {
   public CorsConfigurationSource corsConfigurationSource(SecurityProperties securityProperties) {
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOrigins(origins);
+//    configuration.setAllowedOrigins(origins);
+    configuration.addAllowedOriginPattern("*");
     configuration.addAllowedMethod("*");
     configuration.addAllowedHeader("*");
     configuration.setAllowCredentials(true);

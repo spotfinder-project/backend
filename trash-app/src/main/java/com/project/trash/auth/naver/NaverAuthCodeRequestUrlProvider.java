@@ -15,15 +15,15 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class NaverAuthCodeRequestUrlProvider implements AuthCodeRequestUrlProvider {
 
-  private final NaverOAuthConfig naverOAuthConfig;
+  private final NaverProperties naverProperties;
 
   @Override
   public String provideUrl() {
-    return UriComponentsBuilder.fromUriString(naverOAuthConfig.authorizeUri())
+    return UriComponentsBuilder.fromUriString(naverProperties.authorizeUri())
                                .queryParam("response_type", "code")
-                               .queryParam("client_id", naverOAuthConfig.clientId())
-                               .queryParam("redirect_uri", naverOAuthConfig.redirectUri())
-                               .queryParam("scope", String.join(",", naverOAuthConfig.scope()))
+                               .queryParam("client_id", naverProperties.clientId())
+                               .queryParam("redirect_uri", naverProperties.redirectUri())
+                               .queryParam("scope", String.join(",", naverProperties.scope()))
                                .toUriString();
   }
 
