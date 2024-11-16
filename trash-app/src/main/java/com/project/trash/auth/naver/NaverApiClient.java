@@ -27,18 +27,18 @@ import static com.project.trash.common.domain.resultcode.SystemResultCode.SOCIAL
 @Component
 public class NaverApiClient implements SocialApiClient {
 
-  private final NaverOAuthConfig naverOAuthConfig;
+  private final NaverProperties naverProperties;
 
   @Override
   public String getAccessToken(String authCode) {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("grant_type", "authorization_code");
-    params.add("client_id", naverOAuthConfig.clientId());
-    params.add("redirect_uri", naverOAuthConfig.redirectUri());
+    params.add("client_id", naverProperties.clientId());
+    params.add("redirect_uri", naverProperties.redirectUri());
     params.add("code", authCode);
-    params.add("client_secret", naverOAuthConfig.clientSecret());
+    params.add("client_secret", naverProperties.clientSecret());
 
-    String resultText = WebClient.create(naverOAuthConfig.tokenUri())
+    String resultText = WebClient.create(naverProperties.tokenUri())
                                  .post()
                                  .bodyValue(params)
                                  .header("Content-type", "application/x-www-form-urlencoded;charset=utf-8")
@@ -72,11 +72,11 @@ public class NaverApiClient implements SocialApiClient {
   public void unlink(String accessToken) {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("grant_type", "delete");
-    params.add("client_id", naverOAuthConfig.clientId());
-    params.add("client_secret", naverOAuthConfig.clientSecret());
+    params.add("client_id", naverProperties.clientId());
+    params.add("client_secret", naverProperties.clientSecret());
     params.add("access_token", accessToken);
 
-    NaverUnlinkResponse response = WebClient.create(naverOAuthConfig.tokenUri())
+    NaverUnlinkResponse response = WebClient.create(naverProperties.tokenUri())
                                  .post()
                                  .bodyValue(params)
                                  .exchangeToMono(res -> res.bodyToMono(NaverUnlinkResponse.class))
@@ -97,10 +97,10 @@ public class NaverApiClient implements SocialApiClient {
   }
 
   private String fetchMemberInfo(String accessToken) {
-    return WebClient.create(naverOAuthConfig.userInfoUri())
+    return WebClient.create(naverProperties.userInfoUri())
                     .get()
                     .header("Content-type", "application/x-www-form-urlencoded;charset=utf-8")
-                    .header(HttpHeaders.AUTHORIZATION, naverOAuthConfig.authorizationPrefix() + accessToken)
+                    .header(HttpHeaders.AUTHORIZATION, naverProperties.authorizationPrefix() + accessToken)
                     .exchangeToMono(res -> res.bodyToMono(String.class))
                     .block();
   }

@@ -15,15 +15,15 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class KakaoAuthCodeRequestUrlProvider implements AuthCodeRequestUrlProvider {
 
-  private final KakaoOAuthConfig kakaoOAuthConfig;
+  private final KakaoProperties kakaoProperties;
 
   @Override
   public String provideUrl() {
-    return UriComponentsBuilder.fromUriString(kakaoOAuthConfig.authorizeUri())
+    return UriComponentsBuilder.fromUriString(kakaoProperties.authorizeUri())
                                .queryParam("response_type", "code")
-                               .queryParam("client_id", kakaoOAuthConfig.clientId())
-                               .queryParam("redirect_uri", kakaoOAuthConfig.redirectUri())
-                               .queryParam("scope", String.join(",", kakaoOAuthConfig.scope()))
+                               .queryParam("client_id", kakaoProperties.clientId())
+                               .queryParam("redirect_uri", kakaoProperties.redirectUri())
+                               .queryParam("scope", String.join(",", kakaoProperties.scope()))
                                .toUriString();
   }
 
