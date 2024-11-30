@@ -58,8 +58,8 @@ public class FacilityCommandService {
   @Transactional
   public void entry(FacilityEntryRequest param) {
     Facility facility = facilityRepository.save(new Facility(FacilityType.fromCode(param.getType()), param.getName(), param.getLocation(),
-        param.getDetailLocation(), param.getLatitude(), param.getLongitude(),
-        param.getInformation(), AdminUtils.getId()));
+        param.getDetailLocation(), param.getLatitude(), param.getLongitude(), param.getInformation(), param.getDepartment(),
+        param.getDepartmentPhoneNumber(), FacilityApprovalStatus.fromCode(param.getApprovalStatus()), AdminUtils.getId()));
 
     Set<Long> addImageIds = param.getImageIds();
     if (addImageIds != null && !addImageIds.isEmpty()) {
