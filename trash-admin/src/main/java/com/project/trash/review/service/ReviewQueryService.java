@@ -8,6 +8,8 @@ import com.project.trash.facility.response.FacilityReviewListResponse;
 import com.project.trash.member.request.MemberReviewListRequest;
 import com.project.trash.member.response.MemberReviewListResponse;
 import com.project.trash.review.dao.ReviewDao;
+import com.project.trash.review.request.ReviewListRequest;
+import com.project.trash.review.response.ReviewListResponse;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
@@ -42,6 +44,14 @@ public class ReviewQueryService {
    */
   @Transactional(readOnly = true)
   public Pair<List<FacilityReviewListResponse>, Long> getList(FacilityReviewListRequest param) {
+    return Pair.of(reviewDao.select(param), reviewDao.count(param));
+  }
+
+  /**
+   * 리뷰 목록 조회
+   */
+  @Transactional(readOnly = true)
+  public Pair<List<ReviewListResponse>, Long> getList(ReviewListRequest param) {
     return Pair.of(reviewDao.select(param), reviewDao.count(param));
   }
 

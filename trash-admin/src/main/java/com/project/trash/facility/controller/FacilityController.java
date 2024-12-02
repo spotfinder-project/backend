@@ -55,8 +55,7 @@ public class FacilityController {
   private final ReviewCommandService reviewCommandService;
 
   @DeleteMapping
-  @Operation(summary = "선택한 시설물 목록 삭제",
-      description = "선택한 시설물들을 삭제한다."
+  @Operation(summary = "선택한 시설물 목록 삭제", description = "선택한 시설물들을 삭제한다."
           + "\n[에러 코드]"
           + "\n- FAC000 : 시설물 정보가 존재하지 않습니다.")
   public SuccessResponse delete(
@@ -67,8 +66,7 @@ public class FacilityController {
   }
 
   @GetMapping
-  @Operation(summary = "시설물 목록 조회",
-      description = "시설물 목록을 조회한다.")
+  @Operation(summary = "시설물 목록 조회", description = "시설물 목록을 조회한다.")
   public PageListResponse<FacilityListResponse> getList(@ParameterObject FacilityListRequest param) {
     FacilityValidator.validate(param);
 
@@ -77,8 +75,7 @@ public class FacilityController {
   }
 
   @GetMapping("/{facilityId}")
-  @Operation(summary = "시설물 상세 조회",
-      description = "시설물 정보를 상세 조회한다."
+  @Operation(summary = "시설물 상세 조회", description = "시설물 정보를 상세 조회한다."
           + "\n[에러 코드]"
           + "\n- FAC000 : 시설물 정보가 존재하지 않습니다.")
   public DataResponse<FacilityDetailResponse> getDetail(
@@ -88,8 +85,7 @@ public class FacilityController {
   }
 
   @PostMapping
-  @Operation(summary = "시설물 등록",
-      description = "시설물을 등록한다.")
+  @Operation(summary = "시설물 등록", description = "시설물을 등록한다.")
   public SuccessResponse post(@RequestBody FacilityEntryRequest param) {
     FacilityValidator.validate(param);
 
@@ -98,13 +94,9 @@ public class FacilityController {
   }
 
   @PostMapping(value = "/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  @Operation(summary = "시설물 이미지 등록",
-      description = "시설물 이미지를 등록한다.")
+  @Operation(summary = "시설물 이미지 등록", description = "시설물 이미지를 등록한다.")
   public DataResponse<ImageEntryResponse> postImage(
-      @Parameter(
-          description = "이미지 목록",
-          content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)
-      )
+      @Parameter(description = "이미지 목록", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
       @RequestPart(required = false) List<MultipartFile> images) {
     FacilityValidator.validate(images);
 
@@ -112,8 +104,7 @@ public class FacilityController {
   }
 
   @PutMapping
-  @Operation(summary = "시설물 수정",
-      description = "시설물을 수정한다."
+  @Operation(summary = "시설물 수정", description = "시설물을 수정한다."
           + "\n[에러 코드]"
           + "\n- FAC000 : 시설물 정보가 존재하지 않습니다.")
   public SuccessResponse put(@RequestBody FacilityModifyRequest param) {
@@ -124,8 +115,7 @@ public class FacilityController {
   }
 
   @GetMapping("/reviews")
-  @Operation(summary = "시설물 리뷰 목록 조회",
-      description = "시설물의 리뷰 목록을 조회한다.")
+  @Operation(summary = "시설물 리뷰 목록 조회", description = "시설물의 리뷰 목록을 조회한다.")
   public PageListResponse<FacilityReviewListResponse> getReviews(@ParameterObject FacilityReviewListRequest param) {
     FacilityValidator.validate(param);
 
@@ -134,8 +124,7 @@ public class FacilityController {
   }
 
   @DeleteMapping("/reviews")
-  @Operation(summary = "선택한 리뷰 목록 삭제",
-      description = "선택한 리뷰들을 삭제한다."
+  @Operation(summary = "선택한 리뷰 목록 삭제", description = "선택한 리뷰들을 삭제한다."
           + "\n[에러 코드]"
           + "\n- RVW000 : 리뷰 정보가 존재하지 않습니다.")
   public SuccessResponse deleteReview(

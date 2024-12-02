@@ -7,6 +7,7 @@ import com.project.trash.common.constant.PathConstant;
 import com.project.trash.common.exception.ValidationException;
 import com.project.trash.common.exception.handler.CustomAuthenticationEntryPoint;
 import com.project.trash.common.utils.CookieUtils;
+import com.project.trash.common.utils.LogUtils;
 import com.project.trash.token.domain.Token;
 
 import org.apache.commons.lang3.StringUtils;
@@ -40,7 +41,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
     String path = request.getServletPath();
-    if (Pattern.matches(PathConstant.SWAGGER_PATHS, path)) {
+    if (Pattern.matches(PathConstant.SWAGGER_PATHS, path) || Pattern.matches(PathConstant.LOGIN_PATHS, path)) {
       filterChain.doFilter(request, response);
       return;
     }
@@ -72,6 +73,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
       filterChain.doFilter(request, response);
     } catch (Exception e) {
+      LogUtils.info(e.getMessage());
       String message = e instanceof ValidationException ? ((ValidationException) e).getResultCode().getMessage() : e.getMessage();
       authenticationEntryPoint.commence(request, response, new AuthenticationException(message, e) {});
     }
