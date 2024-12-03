@@ -15,7 +15,6 @@ import com.project.trash.facility.response.FacilityListResponse;
 import com.project.trash.facility.response.FacilityReviewListResponse;
 import com.project.trash.facility.service.FacilityCommandService;
 import com.project.trash.facility.service.FacilityQueryService;
-import com.project.trash.review.service.ReviewCommandService;
 import com.project.trash.review.service.ReviewQueryService;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -52,7 +51,6 @@ public class FacilityController {
   private final FacilityQueryService facilityQueryService;
 
   private final ReviewQueryService reviewQueryService;
-  private final ReviewCommandService reviewCommandService;
 
   @DeleteMapping
   @Operation(summary = "선택한 시설물 목록 삭제", description = "선택한 시설물들을 삭제한다."
@@ -121,17 +119,6 @@ public class FacilityController {
 
     Pair<List<FacilityReviewListResponse>, Long> pair = reviewQueryService.getList(param);
     return new PageListResponse<>(param, pair.getLeft(), pair.getRight());
-  }
-
-  @DeleteMapping("/reviews")
-  @Operation(summary = "선택한 리뷰 목록 삭제", description = "선택한 리뷰들을 삭제한다."
-          + "\n[에러 코드]"
-          + "\n- RVW000 : 리뷰 정보가 존재하지 않습니다.")
-  public SuccessResponse deleteReview(
-      @Parameter(description = "삭제할 리뷰들의 ID 목록", required = true, example = "[1, 2, 3]") @RequestParam Set<Long> reviewIds) {
-
-    reviewCommandService.delete(reviewIds);
-    return new SuccessResponse();
   }
 
   @PostMapping(value = "/excel/read")
