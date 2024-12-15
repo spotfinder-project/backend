@@ -117,7 +117,11 @@ public class MemberCommandService {
   public void delete(MemberDeleteRequest param) {
     Member member = memberQueryService.getOne(MemberUtils.getMember().getSocialId());
 
-    socialApiClient.unlink(member.getSocialType(), param.getAccessToken());
+    if (member.getSocialType() == SocialType.APPLE) {
+      appleService.revoke(param.getAccessToken());
+    } else {
+      socialApiClient.unlink(member.getSocialType(), param.getAccessToken());
+    }
     member.delete();
     tokenRepository.delete(getToken(MemberUtils.getMember().getSocialId()));
   }

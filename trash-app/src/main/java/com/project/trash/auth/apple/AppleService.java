@@ -12,10 +12,10 @@ import com.project.trash.common.exception.ValidationException;
 import com.project.trash.common.utils.LogUtils;
 import com.project.trash.member.domain.enums.GenderType;
 import com.project.trash.member.domain.enums.SocialType;
+import com.project.trash.member.response.AppleTokenResponse;
 
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -36,7 +36,9 @@ import java.util.Date;
 import javax.management.openmbean.InvalidKeyException;
 
 import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Mono;
 
+import static com.project.trash.common.domain.resultcode.AuthResultCode.AUTH_APPLE_REVOKE_FAIL;
 import static com.project.trash.common.domain.resultcode.AuthResultCode.AUTH_OAUTH_GET_MEMBER_FAIL;
 
 @Service
@@ -48,6 +50,31 @@ public class AppleService {
   private final AppleProperties appleProperties;
 
   public OAuthMember getMemberInfo(String code) {
+    return makeOAuthMember(getToken(code));
+  }
+
+  public void revoke(String code) {
+    String refreshToken = getToken(code).getRefreshToken();
+
+    try {
+      MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+      params.add("client_id", appleProperties.clientId());
+      params.add("token", refreshToken);
+      params.add("client_secret", createClientSecret());
+      params.add("token_type_hint", "refresh_token");
+
+      WebClient.create(appleProperties.revokeUri())
+                      .post()
+                      .header("Content-type", "application/x-www-form-urlencoded;charset=utf-8")
+                      .bodyValue(params)
+                      .exchangeToMono(res -> Mono.empty())
+                      .block();
+    } catch (Exception e) {
+      throw new ValidationException(AUTH_APPLE_REVOKE_FAIL, e);
+    }
+  }
+
+  private AppleTokenResponse getToken(String code) {
     try {
       MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
       params.add("grant_type", "authorization_code");
@@ -56,14 +83,12 @@ public class AppleService {
       params.add("code", code);
       params.add("client_secret", createClientSecret());
 
-      String resultText = WebClient.create(appleProperties.tokenUri())
-                                   .post()
-                                   .header("Content-type", "application/x-www-form-urlencoded;charset=utf-8")
-                                   .bodyValue(params)
-                                   .exchangeToMono(res -> res.bodyToMono(String.class))
-                                   .block();
-
-      return makeOAuthMember(resultText);
+      return WebClient.create(appleProperties.tokenUri())
+                      .post()
+                      .header("Content-type", "application/x-www-form-urlencoded;charset=utf-8")
+                      .bodyValue(params)
+                      .exchangeToMono(res -> res.bodyToMono(AppleTokenResponse.class))
+                      .block();
     } catch (Exception e) {
       throw new ValidationException(AUTH_OAUTH_GET_MEMBER_FAIL, e);
     }
@@ -142,12 +167,10 @@ public class AppleService {
     return content;
   }
 
-  private OAuthMember makeOAuthMember(String resultText) {
+  private OAuthMember makeOAuthMember(AppleTokenResponse token) {
     try {
-      JSONObject result = new JSONObject(resultText);
-
       //ID TOKEN을 통해 회원 고유 식별자 받기
-      SignedJWT signedJWT = SignedJWT.parse(result.getString("id_token"));
+      SignedJWT signedJWT = SignedJWT.parse(token.getIdToken());
       JWTClaimsSet claimsSet = signedJWT.getJWTClaimsSet();
 
       String userId = claimsSet.getStringClaim("sub"); //

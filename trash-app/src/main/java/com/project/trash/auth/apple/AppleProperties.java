@@ -11,6 +11,7 @@ public record AppleProperties(
     String redirectUri,
     String authorizeUri,
     String tokenUri,
+    String revokeUri,
     String responseMode,
     String[] responseType,
     String[] scope,
