@@ -12,9 +12,8 @@ import com.project.trash.report.service.ReportCommandService;
 import com.project.trash.report.service.ReportQueryService;
 
 import org.apache.commons.lang3.tuple.Pair;
-
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -48,7 +47,7 @@ public class ReportController {
   @GetMapping
   @Operation(summary = "신고 목록 조회",
       description = "신고 목록을 조회한다.")
-  public PageListResponse<ReportListResponse> getList(@ModelAttribute ReportListRequest param) {
+  public PageListResponse<ReportListResponse> getList(@ParameterObject ReportListRequest param) {
     ReportValidator.validate(param);
 
     Pair<List<ReportListResponse>, Long> pair = reportQueryService.getList(param);

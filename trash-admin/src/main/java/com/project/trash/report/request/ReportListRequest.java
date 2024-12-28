@@ -3,7 +3,6 @@ package com.project.trash.report.request;
 import com.project.trash.common.request.PageRequest;
 
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,7 +16,7 @@ public class ReportListRequest extends PageRequest {
   /**
    * 신고 내용
    */
-  @Parameter(description = "신고 내용", example = "현재는 해당 시설물이 존재하지 않습니다.")
+  @Parameter(description = "신고 내용", example = "청소")
   private String content;
   /**
    * 상태
