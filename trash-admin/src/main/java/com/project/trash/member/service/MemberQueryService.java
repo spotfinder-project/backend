@@ -10,11 +10,14 @@ import com.project.trash.member.response.MemberDetailResponse;
 import com.project.trash.member.response.MemberListResponse;
 import com.project.trash.member.response.MemberSignupHistoryResponse;
 
+import com.project.trash.token.domain.Token;
+import com.project.trash.token.repository.TokenRepository;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,6 +28,7 @@ import static com.project.trash.common.domain.resultcode.MemberResultCode.MEMBER
 public class MemberQueryService {
 
   private final MemberRepository memberRepository;
+  private final TokenRepository tokenRepository;
   private final MemberDao memberDao;
 
   @Transactional(readOnly = true)
@@ -44,6 +48,17 @@ public class MemberQueryService {
   @Transactional(readOnly = true)
   public Member getOne(Long memberId) {
     return memberRepository.findById(memberId).orElseThrow(() -> new ValidationException(MEMBER_NOT_FOUND));
+  }
+
+  @Transactional(readOnly = true)
+  public Member getOne(String socialId) {
+    return memberRepository.findBySocialIdAndValid(socialId, Boolean.TRUE)
+            .orElseThrow(() -> new ValidationException(MEMBER_NOT_FOUND));
+  }
+
+  @Transactional(readOnly = true)
+  public Optional<Token> getToken(String socialId) {
+    return tokenRepository.findByMemberId(socialId);
   }
 
   @Transactional(readOnly = true)

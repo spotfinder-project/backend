@@ -1,3 +1,3 @@
 [submodule "backend-config"]
 	path = backend-config
-	url = https://github.com/garbage-project/backend-config.git
+	url = https://github.com/spotfinder-project/backend-config.git

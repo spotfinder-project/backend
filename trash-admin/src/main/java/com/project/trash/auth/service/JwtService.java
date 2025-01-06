@@ -3,6 +3,7 @@ package com.project.trash.auth.service;
 import com.project.trash.admin.domain.Admin;
 import com.project.trash.auth.config.JwtConfig;
 
+import com.project.trash.member.domain.enums.Role;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -24,11 +25,12 @@ public class JwtService {
 
   private final JwtConfig jwtConfig;
 
-  public Pair<String, Long> createAccessToken(String socialId) {
+  public Pair<String, Long> createAccessToken(String socialId, Role role) {
     String token = Jwts.builder()
                        .setSubject(socialId)
                        .setIssuedAt(new Date(System.currentTimeMillis()))
                        .setExpiration(new Date(System.currentTimeMillis() + jwtConfig.accessExpiration()))
+                       .claim("role", role.getCode())
                        .signWith(getSignInKey(), SignatureAlgorithm.HS512)
                        .compact();
 
@@ -48,6 +50,10 @@ public class JwtService {
 
   public String extractUsername(String token) {
     return extractClaim(token, Claims::getSubject);
+  }
+
+  public Role extractRole(String token) {
+    return Role.fromCode(extractClaim(token, claims -> claims.get("role", String.class)));
   }
 
   public boolean isTokenValid(String token, UserDetails userDetails) {

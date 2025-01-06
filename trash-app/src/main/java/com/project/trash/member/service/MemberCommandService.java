@@ -1,8 +1,8 @@
 package com.project.trash.member.service;
 
-import com.project.trash.auth.apple.AppleService;
-import com.project.trash.auth.client.SocialApiClientComposite;
-import com.project.trash.auth.domain.OAuthMember;
+import com.project.trash.member.sns.apple.AppleService;
+import com.project.trash.member.sns.client.SocialApiClientComposite;
+import com.project.trash.member.domain.OAuthMember;
 import com.project.trash.auth.service.JwtService;
 import com.project.trash.common.domain.enums.Valid;
 import com.project.trash.common.exception.ValidationException;
@@ -55,9 +55,9 @@ public class MemberCommandService {
     }
 
     // 소셜 ID 일치여부 검증
-    if (!socialId.equals(oauthMember.socialId())) {
-      throw new ValidationException(AUTH_SOCIAL_ID_INVALID);
-    }
+//    if (!socialId.equals(oauthMember.socialId())) {
+//      throw new ValidationException(AUTH_SOCIAL_ID_INVALID);
+//    }
 
     if (!memberRepository.existsBySocialIdAndValid(oauthMember.socialId(), Boolean.TRUE)) {
       member = memberRepository.save(

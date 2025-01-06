@@ -8,6 +8,9 @@ import com.project.trash.common.exception.ValidationException;
 import com.project.trash.common.exception.handler.CustomAuthenticationEntryPoint;
 import com.project.trash.common.utils.CookieUtils;
 import com.project.trash.common.utils.LogUtils;
+import com.project.trash.member.domain.MemberDetail;
+import com.project.trash.member.domain.enums.Role;
+import com.project.trash.member.service.MemberQueryService;
 import com.project.trash.token.domain.Token;
 
 import org.apache.commons.lang3.StringUtils;
@@ -35,12 +38,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   private final JwtService jwtService;
   private final AdminQueryService adminQueryService;
+  private final MemberQueryService memberQueryService;
   private final CustomAuthenticationEntryPoint authenticationEntryPoint;
 
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
     String path = request.getServletPath();
+    LogUtils.info("request: " + request.getRequestURI());
     if (Pattern.matches(PathConstant.SWAGGER_PATHS, path) || Pattern.matches(PathConstant.LOGIN_PATHS, path)) {
       filterChain.doFilter(request, response);
       return;
@@ -53,23 +58,44 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     try {
-      String adminId = jwtService.extractUsername(accessToken);
-      if (StringUtils.isNotBlank(adminId)) {
-        AdminDetail adminDetail = new AdminDetail(adminQueryService.getOne(adminId));
+      Role role = jwtService.extractRole(accessToken);
 
-        Optional<Token> token = adminQueryService.getToken(adminId);
-        if (token.isEmpty() || !token.get().getAccessToken().equals(accessToken)) {
-          filterChain.doFilter(request, response);
-          return;
+      if (role == Role.ADMIN) {
+        String adminId = jwtService.extractUsername(accessToken);
+        if (StringUtils.isNotBlank(adminId)) {
+          AdminDetail adminDetail = new AdminDetail(adminQueryService.getOne(adminId));
+
+          Optional<Token> token = adminQueryService.getToken(adminId);
+          if (token.isEmpty() || !token.get().getAccessToken().equals(accessToken)) {
+            filterChain.doFilter(request, response);
+            return;
+          }
+
+          if (jwtService.isTokenValid(accessToken, adminDetail)) {
+            Authentication authentication =
+                    new UsernamePasswordAuthenticationToken(adminDetail, accessToken, adminDetail.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+          }
         }
+      } else {
+        String socialId = jwtService.extractUsername(accessToken);
+        if (StringUtils.isNotBlank(socialId)) {
+          MemberDetail memberDetail = new MemberDetail(memberQueryService.getOne(socialId));
 
-        // 유효성 체크
-        if (jwtService.isTokenValid(accessToken, adminDetail)) {
-          Authentication authentication =
-              new UsernamePasswordAuthenticationToken(adminDetail, accessToken, adminDetail.getAuthorities());
-          SecurityContextHolder.getContext().setAuthentication(authentication);
+          Optional<Token> token = memberQueryService.getToken(socialId);
+          if (token.isEmpty() || !token.get().getAccessToken().equals(accessToken)) {
+            filterChain.doFilter(request, response);
+            return;
+          }
+
+          if (jwtService.isTokenValid(accessToken, memberDetail)) {
+            Authentication authentication =
+                    new UsernamePasswordAuthenticationToken(memberDetail, accessToken, memberDetail.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+          }
         }
       }
+
 
       filterChain.doFilter(request, response);
     } catch (Exception e) {

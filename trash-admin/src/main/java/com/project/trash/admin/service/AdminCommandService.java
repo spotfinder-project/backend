@@ -2,13 +2,14 @@ package com.project.trash.admin.service;
 
 import com.project.trash.admin.domain.Admin;
 import com.project.trash.admin.request.AdminModifyRequest;
-import com.project.trash.admin.request.LoginRequest;
+import com.project.trash.admin.request.AdminLoginRequest;
 import com.project.trash.admin.request.ReissueRequest;
 import com.project.trash.admin.response.ReissueTokenResponse;
 import com.project.trash.admin.response.LoginResponse;
 import com.project.trash.auth.service.JwtService;
 import com.project.trash.common.exception.ValidationException;
 import com.project.trash.common.utils.CookieUtils;
+import com.project.trash.member.domain.enums.Role;
 import com.project.trash.token.domain.Token;
 import com.project.trash.token.repository.TokenRepository;
 import com.project.trash.utils.AdminUtils;
@@ -36,7 +37,7 @@ public class AdminCommandService {
   private final TokenRepository tokenRepository;
 
   @Transactional
-  public LoginResponse login(LoginRequest param, HttpServletResponse response) {
+  public LoginResponse login(AdminLoginRequest param, HttpServletResponse response) {
     Admin admin = adminQueryService.getOne(param.getId());
 
     // 비밀번호 검증
@@ -44,7 +45,7 @@ public class AdminCommandService {
       throw new ValidationException(ADMIN_INFO_NOT_MATCH);
     }
 
-    Pair<String, Long> accessToken = jwtService.createAccessToken(admin.getId());
+    Pair<String, Long> accessToken = jwtService.createAccessToken(admin.getId(), Role.ADMIN);
     Pair<String, Long> refreshToken = jwtService.createRefreshToken(admin.getId());
 
     tokenRepository.save(new Token(admin.getId(), accessToken.getLeft(), refreshToken.getLeft()));
@@ -86,7 +87,7 @@ public class AdminCommandService {
       throw new ValidationException(AUTH_TOKEN_INVALID);
     }
 
-    Pair<String, Long> accessTokenInfo = jwtService.createAccessToken(admin.getId());
+    Pair<String, Long> accessTokenInfo = jwtService.createAccessToken(admin.getId(), Role.ADMIN);
     Pair<String, Long> refreshTokenInfo = jwtService.createRefreshToken(admin.getId());
 
     token.updateToken(accessTokenInfo.getLeft(), refreshTokenInfo.getLeft());

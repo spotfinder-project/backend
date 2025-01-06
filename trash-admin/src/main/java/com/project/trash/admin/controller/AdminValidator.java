@@ -1,7 +1,7 @@
 package com.project.trash.admin.controller;
 
 import com.project.trash.admin.request.AdminModifyRequest;
-import com.project.trash.admin.request.LoginRequest;
+import com.project.trash.admin.request.AdminLoginRequest;
 import com.project.trash.admin.request.ReissueRequest;
 import com.project.trash.common.utils.ValidatorUtils;
 
@@ -14,7 +14,7 @@ public class AdminValidator {
     ValidatorUtils.validateEmpty(param.getPassword());
   }
 
-  public void validate(LoginRequest param) {
+  public void validate(AdminLoginRequest param) {
     ValidatorUtils.validateEmpty(param.getId());
     ValidatorUtils.validateEmpty(param.getPassword());
   }

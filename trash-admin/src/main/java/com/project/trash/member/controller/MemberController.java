@@ -4,13 +4,10 @@ import com.project.trash.common.response.DataResponse;
 import com.project.trash.common.response.ListResponse;
 import com.project.trash.common.response.PageListResponse;
 import com.project.trash.common.response.SuccessResponse;
+import com.project.trash.common.utils.ValidatorUtils;
 import com.project.trash.facility.service.FacilityQueryService;
 import com.project.trash.member.controller.validation.MemberValidator;
-import com.project.trash.member.request.MemberFacilityListRequest;
-import com.project.trash.member.request.MemberListRequest;
-import com.project.trash.member.request.MemberReviewListRequest;
-import com.project.trash.member.request.MemberReviewModifyRequest;
-import com.project.trash.member.request.MemberSignupHistoryRequest;
+import com.project.trash.member.request.*;
 import com.project.trash.member.response.MemberDetailResponse;
 import com.project.trash.member.response.MemberFacilityListResponse;
 import com.project.trash.member.response.MemberListResponse;
@@ -21,16 +18,10 @@ import com.project.trash.member.service.MemberQueryService;
 import com.project.trash.review.service.ReviewCommandService;
 import com.project.trash.review.service.ReviewQueryService;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Set;
@@ -54,6 +45,15 @@ public class MemberController {
   private final ReviewQueryService reviewQueryService;
   private final ReviewCommandService reviewCommandService;
 
+  @PostMapping("/login")
+  @Operation(summary = "로그인")
+  public SuccessResponse postLogin(@RequestBody MemberLoginRequest param, HttpServletResponse response) {
+    MemberValidator.validate(param);
+
+    memberCommandService.login(param, response);
+    return new SuccessResponse();
+  }
+
   @DeleteMapping("/{memberId}")
   @Operation(summary = "회원 삭제",
       description = "회원을 삭제한다."
@@ -63,6 +63,15 @@ public class MemberController {
       @Parameter(description = "삭제할 회원의 ID", required = true, example = "1") @PathVariable Long memberId) {
 
     memberCommandService.delete(memberId);
+    return new SuccessResponse();
+  }
+
+  @PostMapping("/unlink")
+  @Operation(summary = "소셜 로그인 연동 해제")
+  public SuccessResponse unlink(@RequestBody MemberUnlinkRequest param) {
+    ValidatorUtils.validateEmpty(param.getAuthCode());
+
+    memberCommandService.unlink(param.getAuthCode());
     return new SuccessResponse();
   }
 

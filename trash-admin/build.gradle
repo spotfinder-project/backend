@@ -9,6 +9,9 @@ dependencies {
 task copyConfig(type: Copy) {
     copy {
         from(fileTree(dir: '../backend-config/admin', include: '*.yml'))
+        from(fileTree(dir: '../backend-config/key', include: '*.*')) {
+            into 'key'
+        }
         into 'src/main/resources'
     }
 }

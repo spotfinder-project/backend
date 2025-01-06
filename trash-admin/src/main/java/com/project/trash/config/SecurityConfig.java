@@ -6,6 +6,8 @@ import com.project.trash.auth.service.JwtService;
 import com.project.trash.common.exception.handler.CustomAccessDeniedHandler;
 import com.project.trash.common.exception.handler.CustomAuthenticationEntryPoint;
 
+import com.project.trash.member.domain.enums.Role;
+import com.project.trash.member.service.MemberQueryService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
@@ -35,6 +37,7 @@ public class SecurityConfig {
 
   private final JwtService jwtService;
   private final AdminQueryService adminQueryService;
+  private final MemberQueryService memberQueryService;
 
   private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
   private final CustomAccessDeniedHandler customAccessDeniedHandler;
@@ -50,9 +53,10 @@ public class SecurityConfig {
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(
             (authorize) -> authorize.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/doc", "/health",
-                                        "/admins/login", "/admins/reissue").permitAll()
-                                    .anyRequest().authenticated())
-        .addFilterBefore(new JwtAuthenticationFilter(jwtService, adminQueryService, customAuthenticationEntryPoint),
+                                        "/admins/login", "/admins/reissue", "/auth/**", "/members/login").permitAll()
+                                    .requestMatchers("/members/unlink").hasAuthority(Role.MEMBER.getCode())
+                                    .anyRequest().hasAuthority(Role.ADMIN.getCode()))
+        .addFilterBefore(new JwtAuthenticationFilter(jwtService, adminQueryService, memberQueryService, customAuthenticationEntryPoint),
             UsernamePasswordAuthenticationFilter.class)
         .exceptionHandling(it -> {
           it.authenticationEntryPoint(customAuthenticationEntryPoint);
@@ -68,7 +72,8 @@ public class SecurityConfig {
   public CorsConfigurationSource corsConfigurationSource(SecurityProperties securityProperties) {
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOrigins(origins);
+//    configuration.setAllowedOrigins(origins);
+    configuration.addAllowedOriginPattern("*");
     configuration.addAllowedMethod("*");
     configuration.addAllowedHeader("*");
     configuration.setAllowCredentials(true);

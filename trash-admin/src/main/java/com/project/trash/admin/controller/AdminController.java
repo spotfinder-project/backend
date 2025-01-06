@@ -1,7 +1,7 @@
 package com.project.trash.admin.controller;
 
 import com.project.trash.admin.request.AdminModifyRequest;
-import com.project.trash.admin.request.LoginRequest;
+import com.project.trash.admin.request.AdminLoginRequest;
 import com.project.trash.admin.request.ReissueRequest;
 import com.project.trash.admin.response.ReissueTokenResponse;
 import com.project.trash.admin.response.LoginResponse;
@@ -36,7 +36,7 @@ public class AdminController {
           + "\n[에러 코드]"
           + "\n- ADM000 : 관리자 정보가 존재하지 않습니다."
           + "\n- ADM001 : 관리자 정보가 일치하지 않습니다.")
-  public DataResponse<LoginResponse> postLogin(@RequestBody LoginRequest param, HttpServletResponse response) {
+  public DataResponse<LoginResponse> postLogin(@RequestBody AdminLoginRequest param, HttpServletResponse response) {
     AdminValidator.validate(param);
 
     return new DataResponse<>(adminCommandService.login(param, response));

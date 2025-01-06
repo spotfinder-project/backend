@@ -54,7 +54,7 @@ public class SecurityConfig {
                                         , "/members/reissue", "/members/exist/**").permitAll()
                                     .requestMatchers(HttpMethod.GET, "/facilities/**").permitAll()
                                     .requestMatchers("/auth/**", "/members/login").permitAll()
-                                    .anyRequest().permitAll())
+                                    .anyRequest().authenticated())
         .addFilterBefore(new JwtAuthenticationFilter(jwtService, memberQueryService, customAuthenticationEntryPoint),
             UsernamePasswordAuthenticationFilter.class)
         .exceptionHandling(it -> {

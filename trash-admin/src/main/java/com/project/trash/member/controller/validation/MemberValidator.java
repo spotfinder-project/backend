@@ -3,11 +3,7 @@ package com.project.trash.member.controller.validation;
 import com.project.trash.common.exception.ValidationException;
 import com.project.trash.common.utils.DateTimeUtils;
 import com.project.trash.common.utils.ValidatorUtils;
-import com.project.trash.member.request.MemberFacilityListRequest;
-import com.project.trash.member.request.MemberListRequest;
-import com.project.trash.member.request.MemberReviewListRequest;
-import com.project.trash.member.request.MemberReviewModifyRequest;
-import com.project.trash.member.request.MemberSignupHistoryRequest;
+import com.project.trash.member.request.*;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -55,6 +51,12 @@ public class MemberValidator {
       throw new ValidationException(PARAM_INVALID);
     }
     if (!DateTimeUtils.isBeforeDate(startDate, endDate)) {
+      throw new ValidationException(PARAM_INVALID);
+    }
+  }
+
+  public void validate(MemberLoginRequest param) {
+    if (StringUtils.isAnyBlank(param.getSocialType(), param.getAuthCode())) {
       throw new ValidationException(PARAM_INVALID);
     }
   }

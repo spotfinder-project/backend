@@ -1,5 +1,6 @@
 package com.project.trash.admin.domain;
 
+import com.project.trash.member.domain.enums.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,7 +24,7 @@ public class AdminDetail implements UserDetails {
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    return List.of(new SimpleGrantedAuthority("A"));
+    return List.of(new SimpleGrantedAuthority(Role.ADMIN.getCode()));
   }
 
   @Override
